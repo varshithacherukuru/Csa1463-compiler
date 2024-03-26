@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef enum {
+    PLUS,
+    MINUS,
+    MULTIPLY,
+    DIVIDE,
+    INVALID_OPERATOR,
+    END_OF_FILE
+} TokenType;
+
+TokenType getToken(FILE *fp) {
+    char c = fgetc(fp);
+
+    switch (c) {
+        case '+':
+            return PLUS;
+        case '-':
+            return MINUS;
+        case '*':
+            return MULTIPLY;
+        case '/':
+            return DIVIDE;
+        case EOF:
+            return END_OF_FILE;
+        default:
+            return INVALID_OPERATOR;
+    }
+}
+
+int main() {
+    FILE *fp;
+    TokenType token;
+
+    fp = fopen("input.txt", "r");
+    if (fp == NULL) {
+        printf("Error opening file.\n");
+        return EXIT_FAILURE;
+    }
+
+    while ((token = getToken(fp)) != END_OF_FILE) {
+        switch (token) {
+            case PLUS:
+                printf("Operator: +\n");
+                break;
+            case MINUS:
+                printf("Operator: -\n");
+                break;
+            case MULTIPLY:
+                printf("Operator: *\n");
+                break;
+            case DIVIDE:
+                printf("Operator: /\n");
+                break;
+            case INVALID_OPERATOR:
+                printf("Invalid Operator\n");
+                break;
+            default:
+                printf("Unknown token.\n");
+                break;
+        }
+    }
+
+    fclose(fp);
+    return EXIT_SUCCESS;
+}
