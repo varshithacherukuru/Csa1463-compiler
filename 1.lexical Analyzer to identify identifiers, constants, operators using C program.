@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX_IDENTIFIER_LENGTH 50
+#define MAX_CONSTANT_LENGTH 10
+
+typedef enum {
+    IDENTIFIER,
+    CONSTANT,
+    OPERATOR,
+    END_OF_FILE
+} TokenType;
+
+char buffer[MAX_IDENTIFIER_LENGTH + 1];
+char constantBuffer[MAX_CONSTANT_LENGTH + 1];
+int bufferIndex = 0;
+int constantIndex = 0;
+
+int isOperator(char c) {
+    return (c == '+' || c == '-' || c == '*' || c == '/' || c == '=');
+}
+
+TokenType getToken(FILE *fp) {
+    char c;
+
+    while ((c = fgetc(fp)) != EOF) {
+        if (isspace(c))
+            continue;
+        else if (isalpha(c) || c == '_') { // Start of identifier
+            bufferIndex = 0;
+            buffer[bufferIndex++] = c;
+            while ((c = fgetc(fp)) != EOF && (isalnum(c) || c == '_')) {
+                if (bufferIndex < MAX_IDENTIFIER_LENGTH)
+                    buffer[bufferIndex++] = c;
+                else {
+                    printf("Error: Identifier too long.\n");
+                    exit(EXIT_FAILURE);
+                }
+            }
+            buffer[bufferIndex] = '\0';
+            fseek(fp, -1, SEEK_CUR); // Move file pointer back by one
+            return IDENTIFIER;
+        } else if (isdigit(c)) { // Start of constant
+            constantIndex = 0;
+            constantBuffer[constantIndex++] = c;
+            while ((c = fgetc(fp)) != EOF && (isdigit(c) || c == '.')) {
+                if (constantIndex < MAX_CONSTANT_LENGTH)
+                    constantBuffer[constantIndex++] = c;
+                else {
+                    printf("Error: Constant too long.\n");
+                    exit(EXIT_FAILURE);
+                }
+            }
+            constantBuffer[constantIndex] = '\0';
+            fseek(fp, -1, SEEK_CUR); // Move file pointer back by one
+            return CONSTANT;
+        } else if (isOperator(c)) { // Operator
+            return OPERATOR;
+        } else if (c == '/') { // Possible comment, check if it's a comment
+            if ((c = fgetc(fp)) != EOF && c == '/') { // Single-line comment
+                while ((c = fgetc(fp)) != EOF && c != '\n'); // Ignore until newline
+                continue;
+            } else if (c == '*') { // Multi-line comment
+                while ((c = fgetc(fp)) != EOF) {
+                    if (c == '*') {
+                        if ((c = fgetc(fp)) == EOF)
+                            break;
+                        if (c == '/')
+                            break;
+                    }
+                }
+                continue;
+            } else {
+                fseek(fp, -1, SEEK_CUR); // Move file pointer back by one
+                return OPERATOR; // Return '/'
+            }
+        }
+    }
+
+    return END_OF_FILE;
+}
+
+int main() {
+    FILE *fp;
+    TokenType token;
+
+    fp = fopen("input.txt", "r");
+    if (fp == NULL) {
+        printf("Error opening file.\n");
+        return EXIT_FAILURE;
+    }
+
+    while ((token = getToken(fp)) != END_OF_FILE) {
+        switch (token) {
+            case IDENTIFIER:
+                printf("Identifier: %s\n", buffer);
+                break;
+            case CONSTANT:
+                printf("Constant: %s\n", constantBuffer);
+                break;
+            case OPERATOR:
+                printf("Operator: %c\n", buffer[0]);
+                break;
+            default:
+                printf("Unknown token.\n");
+                break;
+        }
+    }
+
+    fclose(fp);
+    return EXIT_SUCCESS;
+}
