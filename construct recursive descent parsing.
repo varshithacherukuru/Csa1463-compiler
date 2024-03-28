@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <ctype.h>
+
+// Function prototypes
+bool E(char **input);
+bool T(char **input);
+bool F(char **input);
+
+// Function to check if a character is an operator
+bool is_operator(char c) {
+    return c == '+' || c == '-' || c == '*' || c == '/';
+}
+
+// Function for non-terminal E
+bool E(char **input) {
+    if (T(input)) {
+        while (**input == '+' || **input == '-') {
+            (*input)++;
+            if (!T(input))
+                return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+// Function for non-terminal T
+bool T(char **input) {
+    if (F(input)) {
+        while (**input == '*' || **input == '/') {
+            (*input)++;
+            if (!F(input))
+                return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+// Function for non-terminal F
+bool F(char **input) {
+    if (isdigit(**input)) {
+        (*input)++;
+        return true;
+    } else if (**input == '(') {
+        (*input)++;
+        if (E(input) && **input == ')') {
+            (*input)++;
+            return true;
+        }
+    }
+    return false;
+}
+
+// Main function
+int main() {
+    char input[100];
+    printf("Enter an arithmetic expression: ");
+    scanf("%s", input);
+
+    char *ptr = input;
+    if (E(&ptr) && *ptr == '\0') {
+        printf("The input string satisfies the grammar.\n");
+    } else {
+        printf("The input string does not satisfy the grammar.\n");
+    }
+
+    return 0;
+}
