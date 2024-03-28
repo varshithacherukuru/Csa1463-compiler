@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdbool.h>
+#include <math.h>
+
+// Function prototypes
+double expression(char *);
+double term(char *);
+double factor(char *);
+
+// Function to skip whitespaces in the input string
+void skip_spaces(char **ptr) {
+    while (**ptr == ' ')
+        (*ptr)++;
+}
+
+// Function to parse and evaluate an expression
+double expression(char *input) {
+    char *temp_input = input; // Create a temporary pointer
+    double result = term(&temp_input); // Pass the temporary pointer
+
+    // Update the original input pointer based on the temporary pointer
+    input = temp_input;
+
+    while (*input == '+' || *input == '-') {
+        char op = *input;
+        input++; // Move past the operator
+        double next_term = term(&input); // Pass the input directly
+
+        if (op == '+') {
+            result += next_term;
+        } else {
+            result -= next_term;
+        }
+    }
+
+    return result;
+}
+
+// Function to parse and evaluate a term
+double term(char *input) {
+    double result = factor(input);
+
+    while (*input == '*' || *input == '/') {
+        char op = *input;
+        input++; // Move past the operator
+        double next_factor = factor(input);
+
+        if (op == '*') {
+            result *= next_factor;
+        } else {
+            if (next_factor != 0) {
+                result /= next_factor;
+            } else {
+                printf("Error: Division by zero\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+
+    return result;
+}
+
+// Function to parse and evaluate a factor
+double factor(char *input) {
+    skip_spaces(&input);
+
+    double result;
+
+    if (*input == '(') {
+        input++; // Move past the opening parenthesis
+        result = expression(input);
+        if (*input == ')') {
+            input++; // Move past the closing parenthesis
+        } else {
+            printf("Error: Missing closing parenthesis\n");
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        char *end_ptr;
+        result = strtod(input, &end_ptr);
+        if (end_ptr == input) {
+            printf("Error: Invalid input\n");
+            exit(EXIT_FAILURE);
+        }
+        input = end_ptr;
+    }
+
+    return result;
+}
+
+int main() {
+    char input[100];
+    printf("Enter an arithmetic expression: ");
+    fgets(input, sizeof(input), stdin);
+
+    double result = expression(input);
+    printf("Result: %.2f\n", result);
+
+    return 0;
+}
