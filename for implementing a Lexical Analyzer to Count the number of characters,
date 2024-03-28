@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX_LINE_LENGTH 1000
+
+// Function to count the number of characters, words, and lines
+void countCharactersWordsLines(FILE *file, int *charCount, int *wordCount, int *lineCount) {
+    char c;
+    bool inWord = false;
+    *charCount = *wordCount = *lineCount = 0;
+
+    while ((c = fgetc(file)) != EOF) {
+        (*charCount)++;
+
+        if (c == '\n') {
+            (*lineCount)++;
+            inWord = false; // Reset word flag at the end of each line
+        } else if (c == ' ' || c == '\t' || c == '\r') {
+            if (inWord) {
+                (*wordCount)++;
+                inWord = false;
+            }
+        } else {
+            inWord = true;
+        }
+    }
+
+    // If file doesn't end with a newline, count the last line
+    if (*charCount > 0 && c != '\n') {
+        (*lineCount)++;
+    }
+
+    // If the file ends with a word, count the last word
+    if (inWord) {
+        (*wordCount)++;
+    }
+}
+
+int main() {
+    char filename[100];
+    printf("Enter the name of the file: ");
+    scanf("%s", filename);
+
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error: Unable to open the file.\n");
+        return 1;
+    }
+
+    int charCount, wordCount, lineCount;
+    countCharactersWordsLines(file, &charCount, &wordCount, &lineCount);
+
+    printf("Number of characters: %d\n", charCount);
+    printf("Number of words: %d\n", wordCount);
+    printf("Number of lines: %d\n", lineCount);
+
+    fclose(file);
+    return 0;
+}
