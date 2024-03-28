@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <ctype.h>
+
+// Function to check if a character is a valid identifier character
+bool is_valid_identifier_char(char ch) {
+    return isalpha(ch) || ch == '_' || isdigit(ch);
+}
+
+// Function to check if a given string is a valid identifier
+bool is_valid_identifier(const char *identifier) {
+    // Check if the identifier is not empty
+    if (*identifier == '\0')
+        return false;
+
+    // Check if the first character is a letter or underscore
+    if (!isalpha(*identifier) && *identifier != '_')
+        return false;
+
+    // Check the rest of the characters
+    while (*++identifier != '\0') {
+        if (!is_valid_identifier_char(*identifier))
+            return false;
+    }
+
+    return true;
+}
+
+int main() {
+    // Test the function with different identifiers
+    const char *identifiers[] = {"valid_identifier", "123invalid", "_underscore", "not valid"};
+
+    for (int i = 0; i < sizeof(identifiers) / sizeof(identifiers[0]); ++i) {
+        if (is_valid_identifier(identifiers[i])) {
+            printf("'%s' is a valid identifier.\n", identifiers[i]);
+        } else {
+            printf("'%s' is not a valid identifier.\n", identifiers[i]);
+        }
+    }
+
+    return 0;
+}
