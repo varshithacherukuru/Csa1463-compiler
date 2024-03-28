@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+#define MAX_RULES 10
+#define MAX_SYMBOLS 10
+
+char nonTerminals[MAX_SYMBOLS]; // Stores non-terminals
+char productions[MAX_SYMBOLS][MAX_RULES][MAX_SYMBOLS]; // Stores production rules
+int productionCount[MAX_SYMBOLS]; // Stores the number of production rules for each non-terminal
+
+// Function to eliminate left factoring
+void eliminateLeftFactoring(int nonTerminalIndex) {
+    int maxCommonPrefix = 0;
+    for (int i = 0; i < productionCount[nonTerminalIndex] - 1; ++i) {
+        for (int j = i + 1; j < productionCount[nonTerminalIndex]; ++j) {
+            int k = 0;
+            while (productions[nonTerminalIndex][i][k] != '\0' && productions[nonTerminalIndex][j][k] != '\0' &&
+                   productions[nonTerminalIndex][i][k] == productions[nonTerminalIndex][j][k]) {
+                k++;
+            }
+            if (k > maxCommonPrefix) {
+                maxCommonPrefix = k;
+            }
+        }
+    }
+
+    if (maxCommonPrefix > 0) {
+        char newNonTerminal = nonTerminals[nonTerminalIndex] + '\'';
+        printf("%c -> %.*s%c' | ", nonTerminals[nonTerminalIndex], maxCommonPrefix,
+               productions[nonTerminalIndex][0], newNonTerminal);
+        for (int i = 0; i < productionCount[nonTerminalIndex]; ++i) {
+            if (strncmp(productions[nonTerminalIndex][i], productions[nonTerminalIndex][0], maxCommonPrefix) != 0) {
+                printf("%s | ", productions[nonTerminalIndex][i]);
+            }
+        }
+        printf("\n");
+
+        printf("%c' -> ", newNonTerminal);
+        bool epsilonExists = false;
+        for (int i = 0; i < productionCount[nonTerminalIndex]; ++i) {
+            if (strncmp(productions[nonTerminalIndex][i], productions[nonTerminalIndex][0], maxCommonPrefix) == 0) {
+                if (productions[nonTerminalIndex][i][maxCommonPrefix] == '\0') {
+                    epsilonExists = true;
+                } else {
+                    printf("%s%c' | ", &productions[nonTerminalIndex][i][maxCommonPrefix], newNonTerminal);
+                }
+            }
+        }
+        if (epsilonExists) {
+            printf("epsilon\n");
+        } else {
+            printf("\n");
+        }
+    } else {
+        printf("%c -> ", nonTerminals[nonTerminalIndex]);
+        for (int i = 0; i < productionCount[nonTerminalIndex]; ++i) {
+            printf("%s | ", productions[nonTerminalIndex][i]);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    int n;
+    printf("Enter the number of non-terminals: ");
+    scanf("%d", &n);
+
+    // Input non-terminals
+    printf("Enter the non-terminals: ");
+    for (int i = 0; i < n; ++i) {
+        scanf(" %c", &nonTerminals[i]);
+    }
+
+    // Input production rules for each non-terminal
+    for (int i = 0; i < n; ++i) {
+        printf("Enter the number of production rules for %c: ", nonTerminals[i]);
+        scanf("%d", &productionCount[i]);
+        printf("Enter the production rules for %c: ", nonTerminals[i]);
+        for (int j = 0; j < productionCount[i]; ++j) {
+            scanf("%s", productions[i][j]);
+        }
+    }
+
+    printf("After eliminating left factoring:\n");
+
+    // Eliminate left factoring for each non-terminal
+    for (int i = 0; i < n; ++i) {
+        eliminateLeftFactoring(i);
+    }
+
+    return 0;
+}
