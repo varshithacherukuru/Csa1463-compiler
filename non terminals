@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+#define MAX_RULES 10
+#define MAX_SYMBOLS 10
+
+char nonTerminals[MAX_SYMBOLS]; // Stores non-terminals
+char productions[MAX_SYMBOLS][MAX_RULES][MAX_SYMBOLS]; // Stores production rules
+int productionCount[MAX_SYMBOLS]; // Stores the number of production rules for each non-terminal
+
+// Function to eliminate left recursion
+void eliminateLeftRecursion(int nonTerminalIndex) {
+    char newNonTerminal = nonTerminals[nonTerminalIndex] + '\'';
+    printf("%c -> ", nonTerminals[nonTerminalIndex]);
+    for (int i = 0; i < productionCount[nonTerminalIndex]; ++i) {
+        if (productions[nonTerminalIndex][i][0] == nonTerminals[nonTerminalIndex]) {
+            printf("%s%s' | ", &productions[nonTerminalIndex][i][1], &newNonTerminal);
+        } else {
+            printf("%s%s | ", productions[nonTerminalIndex][i], &newNonTerminal);
+        }
+    }
+    printf("epsilon\n");
+
+    printf("%c' -> epsilon | ", newNonTerminal);
+    for (int i = 0; i < productionCount[nonTerminalIndex]; ++i) {
+        if (productions[nonTerminalIndex][i][0] == nonTerminals[nonTerminalIndex]) {
+            printf("%s%s' | ", &productions[nonTerminalIndex][i][1], &newNonTerminal);
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    int n;
+    printf("Enter the number of non-terminals: ");
+    scanf("%d", &n);
+
+    // Input non-terminals
+    printf("Enter the non-terminals: ");
+    for (int i = 0; i < n; ++i) {
+        scanf(" %c", &nonTerminals[i]);
+    }
+
+    // Input production rules for each non-terminal
+    for (int i = 0; i < n; ++i) {
+        printf("Enter the number of production rules for %c: ", nonTerminals[i]);
+        scanf("%d", &productionCount[i]);
+        printf("Enter the production rules for %c: ", nonTerminals[i]);
+        for (int j = 0; j < productionCount[i]; ++j) {
+            scanf("%s", productions[i][j]);
+        }
+    }
+
+    printf("After eliminating left recursion:\n");
+
+    // Eliminate left recursion for each non-terminal
+    for (int i = 0; i < n; ++i) {
+        eliminateLeftRecursion(i);
+    }
+
+    return 0;
+}
