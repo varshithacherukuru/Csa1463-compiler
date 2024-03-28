@@ -1,0 +1,43 @@
+# Recursive descent parser for the grammar
+def E(tokens):
+    if tokens[0].isdigit():
+        return T(tokens)
+    else:
+        return False
+
+def T(tokens):
+    if F(tokens):
+        if tokens[0] == '*' or tokens[0] == '/':
+            tokens.pop(0)
+            return F(tokens)
+        else:
+            return True
+    else:
+        return False
+
+def F(tokens):
+    if tokens[0] == '(':
+        tokens.pop(0)
+        if E(tokens):
+            if tokens[0] == ')':
+                tokens.pop(0)
+                return True
+    elif tokens[0].isdigit():
+        tokens.pop(0)
+        return True
+    else:
+        return False
+
+def parse(input_string):
+    tokens = input_string.split()
+    if E(tokens) and len(tokens) == 0:
+        return True
+    else:
+        return False
+
+# Test the parser
+input_string = input("Enter an arithmetic expression: ")
+if parse(input_string):
+    print("The input string satisfies the grammar.")
+else:
+    print("The input string does not satisfy the grammar.")
