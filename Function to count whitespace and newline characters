@@ -1,0 +1,30 @@
+#include <stdio.h>
+
+// Function to count whitespace and newline characters
+void count_whitespace_and_newlines(char *input_string, int *whitespace_count, int *newline_count) {
+    while (*input_string) {
+        // Check for whitespace characters (space, tab, newline)
+        if (*input_string == ' ' || *input_string == '\t') {
+            (*whitespace_count)++;
+        }
+        // Check for newline characters
+        else if (*input_string == '\n') {
+            (*newline_count)++;
+        }
+        input_string++;
+    }
+}
+
+int main() {
+    char input_string[] = "This is a sample input string\nwith multiple lines\nand whitespace characters such as spaces\tand\ttabs.";
+
+    int whitespace_count = 0;
+    int newline_count = 0;
+
+    count_whitespace_and_newlines(input_string, &whitespace_count, &newline_count);
+
+    printf("Number of whitespace characters: %d\n", whitespace_count);
+    printf("Number of newline characters: %d\n", newline_count);
+
+    return 0;
+}
