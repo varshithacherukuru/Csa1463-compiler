@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define MAX_CODE_LENGTH 100
+
+// Structure to represent a three-address code statement
+typedef struct {
+    char result[20];
+    char op;
+    char arg1[20];
+    char arg2[20];
+} ThreeAddressCode;
+
+// Function prototypes
+void generateThreeAddressCode(char *input);
+void printThreeAddressCode(ThreeAddressCode *code, int count);
+
+// Global variables
+ThreeAddressCode code[MAX_CODE_LENGTH];
+int codeCount = 0;
+
+// Function to add a three-address code statement
+void addCode(char *result, char op, char *arg1, char *arg2) {
+    if (codeCount < MAX_CODE_LENGTH) {
+        strcpy(code[codeCount].result, result);
+        code[codeCount].op = op;
+        strcpy(code[codeCount].arg1, arg1);
+        strcpy(code[codeCount].arg2, arg2);
+        codeCount++;
+    } else {
+        printf("Error: Maximum code length exceeded\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+// Function to generate three-address code for a given input expression
+void generateThreeAddressCode(char *input) {
+    char *token = strtok(input, " ");
+    char arg1[20], arg2[20], result[20];
+
+    strcpy(arg1, token);
+    token = strtok(NULL, " ");
+    char op = token[0];
+    token = strtok(NULL, " ");
+    strcpy(arg2, token);
+    token = strtok(NULL, " ");
+    strcpy(result, token);
+
+    addCode(result, op, arg1, arg2);
+}
+
+// Function to print the generated three-address code
+void printThreeAddressCode(ThreeAddressCode *code, int count) {
+    printf("Three Address Code:\n");
+    printf("Result\tOP\tArg1\tArg2\n");
+    for (int i = 0; i < count; i++) {
+        printf("%s\t%c\t%s\t%s\n", code[i].result, code[i].op, code[i].arg1, code[i].arg2);
+    }
+}
+
+int main() {
+    char input[100];
+    printf("Enter an input expression (e.g., arg1 op arg2 result): ");
+    fgets(input, sizeof(input), stdin);
+
+    generateThreeAddressCode(input);
+    printThreeAddressCode(code, codeCount);
+
+    return 0;
+}
