@@ -1,0 +1,17 @@
+%{
+#include <stdio.h>
+%}
+
+%option noyywrap
+
+%%
+
+"https?://"([^/\r\n]+(/[^/\r\n]*)*)?   { printf("Valid URL: %s\n", yytext); }
+.                                       { printf("Invalid URL: %s\n", yytext); }
+
+%%
+
+int main() {
+    yylex();
+    return 0;
+}
