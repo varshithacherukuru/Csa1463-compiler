@@ -1,0 +1,17 @@
+%{
+#include <stdio.h>
+%}
+
+%option noyywrap
+
+%%
+
+[aeiouAEIOU][a-zA-Z]*      { printf("String starting with a vowel: %s\n", yytext); }
+.                           ; /* Ignore other characters */
+
+%%
+
+int main() {
+    yylex();
+    return 0;
+}
