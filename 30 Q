@@ -1,0 +1,17 @@
+%{
+#include <stdio.h>
+%}
+
+%option noyywrap
+
+%%
+
+[0-9]+      { printf("Number: %s\n", yytext); }
+[a-zA-Z]+   { printf("Word: %s\n", yytext); }
+.           ; /* Ignore other characters */
+%%
+
+int main() {
+    yylex();
+    return 0;
+}
