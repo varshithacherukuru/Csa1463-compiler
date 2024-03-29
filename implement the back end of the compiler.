@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define some constants for the hypothetical machine
+#define ADD 1
+#define SUB 2
+#define MUL 3
+#define DIV 4
+#define HALT 5
+
+// Structure to represent an instruction
+struct Instruction {
+    int opcode;
+    int operand1;
+    int operand2;
+};
+
+// Function to generate machine code for addition operation
+struct Instruction generate_add(int result_reg, int operand1_reg, int operand2_reg) {
+    struct Instruction instr;
+    instr.opcode = ADD;
+    instr.operand1 = operand1_reg;
+    instr.operand2 = operand2_reg;
+    return instr;
+}
+
+// Function to generate machine code for subtraction operation
+struct Instruction generate_sub(int result_reg, int operand1_reg, int operand2_reg) {
+    struct Instruction instr;
+    instr.opcode = SUB;
+    instr.operand1 = operand1_reg;
+    instr.operand2 = operand2_reg;
+    return instr;
+}
+
+// Function to generate machine code for multiplication operation
+struct Instruction generate_mul(int result_reg, int operand1_reg, int operand2_reg) {
+    struct Instruction instr;
+    instr.opcode = MUL;
+    instr.operand1 = operand1_reg;
+    instr.operand2 = operand2_reg;
+    return instr;
+}
+
+// Function to generate machine code for division operation
+struct Instruction generate_div(int result_reg, int operand1_reg, int operand2_reg) {
+    struct Instruction instr;
+    instr.opcode = DIV;
+    instr.operand1 = operand1_reg;
+    instr.operand2 = operand2_reg;
+    return instr;
+}
+
+// Function to generate machine code for halt operation
+struct Instruction generate_halt() {
+    struct Instruction instr;
+    instr.opcode = HALT;
+    return instr;
+}
+
+// Function to emit machine code
+void emit(struct Instruction *instructions, int *num_instructions, struct Instruction instr) {
+    instructions[*num_instructions] = instr;
+    (*num_instructions)++;
+}
+
+int main() {
+    struct Instruction instructions[100]; // Assuming a maximum of 100 instructions
+    int num_instructions = 0;
+
+    // Example: Generate machine code for the expression: (a + b) * (c - d)
+    // For simplicity, let's assume a, b, c, d are stored in registers 1, 2, 3, 4 respectively
+
+    // Generate machine code for addition
+    emit(instructions, &num_instructions, generate_add(5, 1, 2)); // result = a + b
+
+    // Generate machine code for subtraction
+    emit(instructions, &num_instructions, generate_sub(6, 3, 4)); // result = c - d
+
+    // Generate machine code for multiplication
+    emit(instructions, &num_instructions, generate_mul(7, 5, 6)); // result = (a + b) * (c - d)
+
+    // Generate machine code for halt
+    emit(instructions, &num_instructions, generate_halt());
+
+    // Output the generated machine code
+    printf("Generated machine code:\n");
+    for (int i = 0; i < num_instructions; i++) {
+        printf("%d %d %d\n", instructions[i].opcode, instructions[i].operand1, instructions[i].operand2);
+    }
+
+    return 0;
+}
