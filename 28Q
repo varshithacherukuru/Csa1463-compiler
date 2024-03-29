@@ -1,0 +1,11 @@
+Algorithm CountVowelsAndConsonants(sentence):
+    vowelCount = 0
+    consonantCount = 0
+    for each character in sentence:
+        if character is an alphabet:
+            character = convert character to lowercase
+            if character is a vowel (a, e, i, o, u):
+                increment vowelCount
+            else:
+                increment consonantCount
+    return vowelCount, consonantCount
