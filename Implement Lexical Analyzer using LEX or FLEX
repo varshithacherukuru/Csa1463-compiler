@@ -1,0 +1,26 @@
+%{
+#include <stdio.h>
+%}
+
+%%
+
+"#"                     { printf("Preprocessor Directive: %s\n", yytext); }
+"include"               { printf("Keyword: %s\n", yytext); }
+<stdio.h>               { printf("Library: %s\n", yytext); }
+"void"                  { printf("Keyword: %s\n", yytext); }
+"main"                  { printf("Function: %s\n", yytext); }
+"("                     { printf("Left Parenthesis: %s\n", yytext); }
+")"                     { printf("Right Parenthesis: %s\n", yytext); }
+"int"                   { printf("Keyword: %s\n", yytext); }
+"="                     { printf("Assignment Operator: %s\n", yytext); }
+";"                     { printf("Semicolon: %s\n", yytext); }
+"printf"                { printf("Function: %s\n", yytext); }
+"\""([^\"\n]*)\"";      { printf("String Literal: %s\n", yytext); }
+.                       ; /* Ignore other characters */
+
+%%
+
+int main() {
+    yylex();
+    return 0;
+}
