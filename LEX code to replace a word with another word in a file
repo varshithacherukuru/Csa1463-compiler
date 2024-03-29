@@ -1,0 +1,18 @@
+%{
+#include <stdio.h>
+#include <string.h>
+%}
+
+%option noyywrap
+
+%%
+
+"word_to_replace"   { printf("word_to_replace_replacement"); }
+.                    { printf("%s", yytext); }
+
+%%
+
+int main() {
+    yylex();
+    return 0;
+}
